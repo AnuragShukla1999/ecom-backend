@@ -14,7 +14,7 @@ export const signup = async (req, res) => {
         if (!email || !password) {
             res.status(401).json({
                 message: "Please Provide email or password"
-            })
+            }) 
         };
         const hashedPassword = bcryptjs.hashSync(password, 10);
         const newUser = new userModal({ name, email, password: hashedPassword })
@@ -81,15 +81,29 @@ export const logout = async (req, res) => {
 
 export const userDetail = async (req, res) => {
     try {
-        const user = await userModal.findById(req.userId);
+
+        const sessionUser = req.userId;
+
+        const { userId, email, name } = req.body;
+
+
+        const payload = {
+            ...( email && { email : email } ),
+            ...( name && { name : name } )
+        }
+
+        const user = await userModal.findById(sessionUser);
         console.log("User", user);
         if (!user) {
             return res.status(401).json({
                 message: "user not found"
             });
-        }
+        };
+
+        const updateUser = await userModal.findByIdAndUpdate(userId, payload);
+
         res.status(201).json({
-            data: user
+            data: updateUser
         })
     } catch (error) {
         return res.status(500).json({
