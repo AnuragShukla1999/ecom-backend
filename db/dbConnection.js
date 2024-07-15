@@ -13,3 +13,11 @@
 
 import mongoose from "mongoose";
 
+export const dbConnection = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB);
+        console.log("Connected to Database");
+    } catch (error) {
+        console.log("Error", error);
+    }
+}
