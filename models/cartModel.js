@@ -7,4 +7,11 @@ const addToCartSchema = new mongoose.Schema({
     },
     quantity: Number,
     userId: String,
-})
+},
+{
+    timestamps: true
+});
+
+const addToCartModel = mongoose.model("addToCart", addToCartSchema);
+
+export default addToCartModel;
