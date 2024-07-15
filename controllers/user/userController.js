@@ -39,24 +39,18 @@ export const signin = async (req, res) => {
     const { email, password } = req.body;
     try {
         const validUser = await userModal.findOne({ email });
-        
         if (!validUser) {
             return res.status(401).json({
                 message: "user not exist"
             })
         };
-
         const validPassword = bcryptjs.compareSync(password, validUser.password);
-
         if (!validPassword) {
             return res.status(401).json({
                 message: "Wrong Password"
             })
         };
-
-
         const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
         res.cookie('access_token', token).json({
             message: "Sign in Successfully",
             token,
@@ -73,7 +67,6 @@ export const signin = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         res.clearCookie('access_token');
-
         res.status(201).json({
             message: "Logout Successfully"
         })
@@ -83,3 +76,24 @@ export const logout = async (req, res) => {
         })
     }
 };
+
+
+
+export const userDetail = async (req, res) => {
+    try {
+        const user = await userModal.findById(req.userId);
+        console.log("User", user);
+        if (!user) {
+            return res.status(401).json({
+                message: "user not found"
+            });
+        }
+        res.status(201).json({
+            data: user
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+}
