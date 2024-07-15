@@ -110,4 +110,24 @@ export const userDetail = async (req, res) => {
             message: error.message
         })
     }
+};
+
+
+
+export const allUsers = async (req, res) => {
+    try {
+        const allUsers = await userModal.find();
+        if (!allUsers) {
+            return res.status(401).json({
+                message: "no user exist"
+            })
+        };
+        res.status(201).json({
+            message: "All Users Found"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
 }
