@@ -18,4 +18,27 @@ export const uploadProduct = async (req, res) => {
             message : error.message
         })
     }
+};
+
+
+
+export const getProduct = async (req, res) => {
+    try {
+        const allProduct = await productModel.find().sort({ createdAt: -1 });
+
+        if (!allProduct) {
+            return res.status(401).json({
+                message: "Product not found"
+            })
+        }
+
+        res.status(201).json({
+            message: "All product founded",
+            product: allProduct
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
 }
