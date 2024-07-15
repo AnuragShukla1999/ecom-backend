@@ -41,4 +41,27 @@ export const getProduct = async (req, res) => {
             message: error.message
         })
     }
+};
+
+
+
+export const getProductById = async (req, res) => {
+    try {
+        const singleProduct = await productModel.findById(req.productId);
+
+        if (!singleProduct) {
+            return res.status(401).json({
+                message: "product not founded"
+            })
+        };
+
+        res.status(201).json({
+            message: "Product founded",
+            product: singleProduct
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
 }

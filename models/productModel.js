@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const productSchema = new mongoose.Schema({
     productName: String,
     brandName: String,
@@ -10,7 +9,6 @@ const productSchema = new mongoose.Schema({
     price: Number,
     sellingPrice: Number
 });
-
 
 const productModel = mongoose.model("product", productSchema);
 
