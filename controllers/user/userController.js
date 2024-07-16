@@ -66,33 +66,66 @@ export const signup = async (req, res) => {
 
 
 
-export const signin = async (req, res) => {
+// export const signin = async (req, res) => {
 
+//     const { email, password } = req.body;
+//     try {
+//         const validUser = await userModal.findOne({ email });
+//         if (!validUser) {
+//             return res.status(401).json({
+//                 message: "user not exist"
+//             })
+//         };
+//         const validPassword = bcryptjs.compareSync(password, validUser.password);
+//         if (!validPassword) {
+//             return res.status(401).json({
+//                 message: "Wrong Password"
+//             })
+//         };
+//         const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+//         res.cookie('access_token', token).json({
+//             message: "Sign in Successfully",
+//             token,
+//             validUser,
+//             success: true
+//         })
+//     } catch (error) {
+//         console.error(error)
+//     }
+// };
+
+
+
+export const signin = (req, res) => {
     const { email, password } = req.body;
-    try {
-        const validUser = await userModal.findOne({ email });
-        if (!validUser) {
-            return res.status(401).json({
-                message: "user not exist"
-            })
-        };
-        const validPassword = bcryptjs.compareSync(password, validUser.password);
-        if (!validPassword) {
-            return res.status(401).json({
-                message: "Wrong Password"
-            })
-        };
-        const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('access_token', token).json({
-            message: "Sign in Successfully",
-            token,
-            validUser,
-            success: true
-        })
-    } catch (error) {
-        console.error(error)
-    }
-};
+
+
+    const sql = 'SELECT * FROM users WHERE email = ?';
+    
+    dbConnection.query(sql, [email],  async (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        } else if (result.length === 0) {
+            res.status(401).json({ message: 'Invalid credentials' });
+        } else {
+            // varify password 
+            const isMatch = await bcryptjs.compareSync(password, result[0].password);
+
+            if (!isMatch) {
+                res.status(401).json({ message: 'Invalid credentials' });
+            } else {
+                const token = jwt.sign(
+                    { id: result[0].id, email: result[0].email },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '1h' }
+                );
+
+                res.status(200).json({ token });
+            }
+        }
+    })
+}
 
 
 
