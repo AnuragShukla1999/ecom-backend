@@ -31,7 +31,9 @@ app.use(cookieParser());
 //     })
 // });
 
-
+app.get('/home', (req, res) => {
+    return res.send("Hello Guys")
+})
 
 app.use('/api', userRoute);
 
