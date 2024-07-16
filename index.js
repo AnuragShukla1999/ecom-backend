@@ -24,12 +24,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-app.get('/', (req, res) => {
-    const sql = "SELECT * FROM student";
-    dbConnection.query(sql, (err, result) => {
-        if (err) return res.json({ Message: "Error inside server" })
-    })
-});
+// app.get('/', (req, res) => {
+//     const sql = "SELECT * FROM student";
+//     dbConnection.query(sql, (err, result) => {
+//         if (err) return res.json({ Message: "Error inside server" })
+//     })
+// });
 
 
 
