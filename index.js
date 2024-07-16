@@ -5,6 +5,9 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { dbConnection } from "./db/dbConnection.js";
 
+
+import userRoute from './routes/userRoutes.js'
+
 dotenv.config();
 
 const app = express();
@@ -27,6 +30,10 @@ app.get('/', (req, res) => {
         if (err) return res.json({ Message: "Error inside server" })
     })
 });
+
+
+
+app.use('/api', userRoute);
 
 
 app.listen(process.env.PORT, () => {
