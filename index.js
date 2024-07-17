@@ -50,10 +50,10 @@ dbConnection.connect(() => {
 
 
 // dbConnection.connect((err) => {
-//     if (err) {
-//         console.error('Error connecting to MySQL database: ');
+//     if (!err) {
+//         console.log('Connected to MySQL database as id ');
 //         return;
 //     }
-//     console.log('Connected to MySQL database as id ');
+//     console.error('Error connecting to MySQL database: ');
 // });
 
