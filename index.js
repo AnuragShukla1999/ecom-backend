@@ -39,7 +39,7 @@ app.use('/api', userRoute);
 
 
 app.listen(process.env.PORT, () => {
-    console.log(`database is connnected at ${process.env.PORT}`);
+    console.log(`server is running at ${process.env.PORT}`);
 });
 
 
@@ -50,10 +50,11 @@ dbConnection.connect(() => {
 
 
 // dbConnection.connect((err) => {
-//     if (!err) {
-//         console.log('Connected to MySQL database as id ');
+//     if (err) {
+//         console.error('Error connecting to MySQL database: ');
 //         return;
+//     } else {
+//         console.log('Connected to MySQL database as id ');
 //     }
-//     console.error('Error connecting to MySQL database: ');
 // });
 
