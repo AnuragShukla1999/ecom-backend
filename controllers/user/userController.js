@@ -44,7 +44,7 @@ export const signup = async (req, res) => {
     const { email, password, name } = req.body;
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcryptjs.hashSync(password, 10);
 
         const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
         
