@@ -242,19 +242,13 @@ export const logout = async (req, res) => {
 
 export const userDetail = async (req, res) => {
     try {
-
         const sessionUser = req.userId;
-
         const { userId, email, name } = req.body;
-
-
         const payload = {
             ...(email && { email: email }),
             ...(name && { name: name })
         }
-
         // const user = await userModal.findById(sessionUser);
-
 
         // checking if sessionUser exists in mysql
         const getUserQuery = 'SELECT * FROM users WHERE id = ?';
@@ -265,21 +259,16 @@ export const userDetail = async (req, res) => {
                     message: err.message
                 })
             }
-
-
             if (result.length === 0) {
                 return res.status(401).json({ message: 'User not found' });
             }
-
             // Update user in MySQL
             const updateUserQuery = 'UPDATE users SET email = ?, name = ? WHERE id = ?';
-
             dbConnection.query(updateUserQuery, [email, name, userId], (err, result) => {
                 if (err) {
                     console.error('Error updating user in MySQL:', err);
                     return res.status(500).json({ message: 'Internal server error' });
                 }
-
                 res.status(201).json({ data: result });
             });
         });
