@@ -253,23 +253,53 @@ export const userDetail = async (req, res) => {
             ...(name && { name: name })
         }
 
-        const user = await userModal.findById(sessionUser);
-        console.log("User", user);
-        if (!user) {
-            return res.status(401).json({
-                message: "user not found"
+        // const user = await userModal.findById(sessionUser);
+
+
+        // checking if sessionUser exists in mysql
+        const getUserQuery = 'SELECT * FROM users WHERE id = ?';
+        dbConnection.query(getUserQuery, [sessionUser], async (err, result) => {
+            if (err) {
+                console.error('Error retrieving user from MySQL:', err);
+                return res.status(500).json({
+                    message: err.message
+                })
+            }
+
+
+            if (result.length === 0) {
+                return res.status(401).json({ message: 'User not found' });
+            }
+
+            // Update user in MySQL
+            const updateUserQuery = 'UPDATE users SET email = ?, name = ? WHERE id = ?';
+
+            dbConnection.query(updateUserQuery, [email, name, userId], (err, result) => {
+                if (err) {
+                    console.error('Error updating user in MySQL:', err);
+                    return res.status(500).json({ message: 'Internal server error' });
+                }
+
+                res.status(201).json({ data: result });
             });
-        };
+        });
 
-        const updateUser = await userModal.findByIdAndUpdate(userId, payload);
 
-        res.status(201).json({
-            data: updateUser
-        })
+        // console.log("User", user);
+        // if (!user) {
+        //     return res.status(401).json({
+        //         message: "user not found"
+        //     });
+        // };
+
+        // const updateUser = await userModal.findByIdAndUpdate(userId, payload);
+
+        // res.status(201).json({
+        //     data: updateUser
+        //})
     } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
+        console.error('Error in userDetail function:', error);
+        return res.status(500).json({ message: error.message });
     }
 };
 
