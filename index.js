@@ -44,16 +44,16 @@ app.listen(process.env.PORT, () => {
 
 
 
-// dbConnection.connect(() => {
-//     console.log("Database is connected")
-// })
+dbConnection.connect(() => {
+    console.log("Database is connected")
+})
 
 
-dbConnection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL database: ' + err.stack);
-        return;
-    }
-    console.log('Connected to MySQL database as id ' + connection.threadId);
-});
+// dbConnection.connect((err) => {
+//     if (err) {
+//         console.error('Error connecting to MySQL database: ');
+//         return;
+//     }
+//     console.log('Connected to MySQL database as id ');
+// });
 
