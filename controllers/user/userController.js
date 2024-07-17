@@ -47,7 +47,7 @@ import { dbConnection } from "../../db/dbConnection.js";
 //         const hashedPassword = await bcryptjs.hashSync(password, 10);
 
 //         const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-        
+
 //         await new Promise((resolve, reject) => {
 //             dbConnection.query(sql, [name, email, hashedPassword], (err, result) => {
 //                 if (err) {
@@ -81,11 +81,12 @@ export const signup = async (req, res) => {
                 message: "Please enter your email and password"
             });
         } else {
-
             const sql = 'SELECT email FROM users WHERE email = ?'
             dbConnection.query(sql, [email], async (err, result) => {
                 if (err) {
-                    throw new Error(err);
+                    return res.status(401).json({
+                        message: err
+                    });
                 };
 
                 if (result[1]) {
@@ -151,35 +152,76 @@ export const signup = async (req, res) => {
 
 
 
+// export const signin = (req, res) => {
+//     const { email, password } = req.body;
+
+//     const sql = 'SELECT * FROM users WHERE email = ?';
+
+//     dbConnection.query(sql, [email],  async (err, result) => {
+//         if (err) {
+//             console.log(err);
+//             res.status(500).json({ message: 'Internal Server Error' });
+//         } else if (result.length === 0) {
+//             res.status(401).json({ message: 'Invalid credentials' });
+//         } else {
+//             // varify password 
+//             const isMatch = await bcryptjs.compareSync(password, result[0].password);
+
+//             if (!isMatch) {
+//                 res.status(401).json({ message: 'Invalid credentials' });
+//             } else {
+//                 const token = jwt.sign(
+//                     { id: result[0].id, email: result[0].email },
+//                     process.env.JWT_SECRET,
+//                     { expiresIn: '1h' }
+//                 );
+
+//                 res.status(200).json({ token });
+//             }
+//         }
+//     })
+// }
+
+
 export const signin = (req, res) => {
     const { email, password } = req.body;
 
-    const sql = 'SELECT * FROM users WHERE email = ?';
-    
-    dbConnection.query(sql, [email],  async (err, result) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({ message: 'Internal Server Error' });
-        } else if (result.length === 0) {
-            res.status(401).json({ message: 'Invalid credentials' });
+    try {
+        if (!email || !password) {
+            res.status(401).json({
+                message: "Please provide email and password"
+            })
         } else {
-            // varify password 
-            const isMatch = await bcryptjs.compareSync(password, result[0].password);
+            const sql = 'SELECT email FROM users WHERE email = ?';
+            dbConnection.query(sql, [email], async (err, result) => {
+                if (err) {
+                    return res.status(401).json({
+                        message: err
+                    });
+                }
 
-            if (!isMatch) {
-                res.status(401).json({ message: 'Invalid credentials' });
-            } else {
-                const token = jwt.sign(
-                    { id: result[0].id, email: result[0].email },
-                    process.env.JWT_SECRET,
-                    { expiresIn: '1h' }
-                );
- 
-                res.status(200).json({ token });
-            }
+                if (!result[1] || !await bcryptjs.compareSync(password, result[1].password)) {
+                    res.status(402).json({
+                        message: "Incorrect email or password"
+                    })
+                } else {
+                    const token = jwt.sign({ id: result[1].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+                    res.status(201).cookie('access_token', token).json({
+                        message: "Sign in successfully"
+                    })
+                }
+            })
         }
-    })
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
 }
+
+
+
 
 
 
@@ -207,8 +249,8 @@ export const userDetail = async (req, res) => {
 
 
         const payload = {
-            ...( email && { email : email } ),
-            ...( name && { name : name } )
+            ...(email && { email: email }),
+            ...(name && { name: name })
         }
 
         const user = await userModal.findById(sessionUser);

@@ -4,11 +4,11 @@ import { allUsers, logout, signin, signup, userDetail } from '../controllers/use
 
 const router = express.Router();
 
-router.post('signup', signup);
-router.post('signin', signin);
-router.post('logout', logout);
-router.get('userdetail', userDetail);
-router.get('allusers', allUsers);
+router.post('/signup', signup);
+router.post('/signin', signin);
+router.post('/logout', logout);
+router.get('/userdetail', userDetail);
+router.get('/allusers', allUsers);
 
 
 export default router;

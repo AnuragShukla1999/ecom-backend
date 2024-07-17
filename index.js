@@ -15,8 +15,8 @@ const app = express();
 app.use(cors());
 
 app.use(cors({
-    origin: 'http://localhost:5173', 
-    credentials: true, 
+    origin: 'http://localhost:5173',
+    credentials: true,
 }));
 
 app.use(bodyParser.json());
@@ -44,6 +44,16 @@ app.listen(process.env.PORT, () => {
 
 
 
-dbConnection.connect(() => {
-    console.log("Database is connected")
-})
+// dbConnection.connect(() => {
+//     console.log("Database is connected")
+// })
+
+
+dbConnection.connect((err) => {
+    if (err) {
+        console.error('Error connecting to MySQL database: ' + err.stack);
+        return;
+    }
+    console.log('Connected to MySQL database as id ' + connection.threadId);
+});
+
