@@ -40,33 +40,82 @@ import { dbConnection } from "../../db/dbConnection.js";
 
 
 /// this is for mysql database
+// export const signup = async (req, res) => {
+//     const { email, password, name } = req.body;
+
+//     try {
+//         const hashedPassword = await bcryptjs.hashSync(password, 10);
+
+//         const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+        
+//         await new Promise((resolve, reject) => {
+//             dbConnection.query(sql, [name, email, hashedPassword], (err, result) => {
+//                 if (err) {
+//                     console.error("Error inserting user:", err);
+//                     reject(err);
+//                 } else {
+//                     console.log("User registered successfully");
+//                     resolve(result);
+//                 }
+//             });
+//         });
+
+//         res.status(201).json({ message: 'User registered successfully' });
+
+//     } catch (error) {
+//         console.error("Error registering user:", error);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// }
+
+
+
+
+
 export const signup = async (req, res) => {
-    const { email, password, name } = req.body;
+    const { name, email, password } = req.body;
 
     try {
-        const hashedPassword = await bcryptjs.hashSync(password, 10);
-
-        const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-        
-        await new Promise((resolve, reject) => {
-            dbConnection.query(sql, [name, email, hashedPassword], (err, result) => {
-                if (err) {
-                    console.error("Error inserting user:", err);
-                    reject(err);
-                } else {
-                    console.log("User registered successfully");
-                    resolve(result);
-                }
+        if (!email || !password) {
+            return res.status(401).json({
+                message: "Please enter your email and password"
             });
-        });
+        } else {
 
-        res.status(201).json({ message: 'User registered successfully' });
+            const sql = 'SELECT email FROM users WHERE email = ?'
+            dbConnection.query(sql, [email], async (err, result) => {
+                if (err) {
+                    throw new Error(err);
+                };
 
+                if (result[1]) {
+                    return res.json({
+                        message: "Email has already been registered"
+                    })
+                } else {
+                    const password = bcryptjs.hashSync(password, 10);
+                    dbConnection.query('INSERT INTO users SET ?', { email: email, password: password, name }, (err, result) => {
+                        if (err) {
+                            throw new Error(err);
+                        } else {
+                            return res.status(201).json({
+                                message: "User created successfully"
+                            })
+                        }
+                    })
+                }
+            })
+        }
     } catch (error) {
-        console.error("Error registering user:", error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).json({
+            message: error.message
+        })
     }
 }
+
+
+
+
 
 
 
