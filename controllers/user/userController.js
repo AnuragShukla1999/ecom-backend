@@ -41,27 +41,33 @@ import { dbConnection } from "../../db/dbConnection.js";
 
 /// this is for mysql database
 export const signup = async (req, res) => {
+    const { email, password, name } = req.body;
 
     try {
-        const { email, password, name } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)'
-        dbConnection.query(sql, [name, email, password], (err, result) => {
-            if (err) {
-                console.log(err);
-                res.status(500).json({ message: 'Internal Server Error' });
-            } else {
-                res.status(201).json({
-                    message: 'User registered successfully'
-                });
-            }
+        const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+        
+        await new Promise((resolve, reject) => {
+            dbConnection.query(sql, [name, email, hashedPassword], (err, result) => {
+                if (err) {
+                    console.error("Error inserting user:", err);
+                    reject(err);
+                } else {
+                    console.log("User registered successfully");
+                    resolve(result);
+                }
+            });
         });
+
+        res.status(201).json({ message: 'User registered successfully' });
+
     } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
+        console.error("Error registering user:", error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
 
 
 
@@ -99,7 +105,6 @@ export const signup = async (req, res) => {
 export const signin = (req, res) => {
     const { email, password } = req.body;
 
-
     const sql = 'SELECT * FROM users WHERE email = ?';
     
     dbConnection.query(sql, [email],  async (err, result) => {
@@ -120,7 +125,7 @@ export const signin = (req, res) => {
                     process.env.JWT_SECRET,
                     { expiresIn: '1h' }
                 );
-
+ 
                 res.status(200).json({ token });
             }
         }
