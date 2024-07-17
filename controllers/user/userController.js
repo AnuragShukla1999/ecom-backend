@@ -247,7 +247,7 @@ export const userDetail = async (req, res) => {
         const payload = {
             ...(email && { email: email }),
             ...(name && { name: name })
-        }
+        };
         // const user = await userModal.findById(sessionUser);
 
         // checking if sessionUser exists in mysql

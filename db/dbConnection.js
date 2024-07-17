@@ -11,6 +11,28 @@ export const dbConnection = mysql.createConnection({
 });
 
 
+// Handle connection errors
+dbConnection.on('error', (err) => {
+    console.error('MySQL Pool Error:', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect();
+    } else {
+      throw err;
+    }
+  });
+  
+  function handleDisconnect() {
+    dbConnection.end(err => {
+      if (err) {
+        console.error('Error ending MySQL pool:', err);
+      }
+      console.log('Reconnecting to MySQL...');
+      // Recreate the pool
+      pool = mysql.createPool(dbConfig);
+    });
+  }
+
+
 
 
 // // import mongoose from "mongoose";
