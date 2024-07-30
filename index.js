@@ -6,7 +6,9 @@ import cookieParser from "cookie-parser";
 import { dbConnection } from "./db/dbConnection.js";
 
 
-import userRoute from './routes/userRoutes.js'
+import userRoute from './routes/userRoutes.js';
+import productRoute from './routes/productRoutes.js'
+
 
 dotenv.config();
 
@@ -36,6 +38,7 @@ app.get('/home', (req, res) => {
 })
 
 app.use('/api', userRoute);
+app.use('/api', productRoute);
 
 
 app.listen(process.env.PORT, () => {
