@@ -1,13 +1,13 @@
 
 
-import mysql from "mysql";
+import mysql from "mysql2";
 
 export const dbConnection = mysql.createConnection({
     host: "127.0.0.1",
     user: "root",
     password: "anurag7587709264@#$%shukla",
-    database: "crud",
-    port: "3308"
+    database: "ecom",
+    port: "3306"
 });
 
 

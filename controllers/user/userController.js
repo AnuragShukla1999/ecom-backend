@@ -89,13 +89,13 @@ export const signup = async (req, res) => {
                     });
                 };
 
-                if (result[1]) {
+                if (result.length > 0) {
                     return res.json({
                         message: "Email has already been registered"
                     })
                 } else {
-                    const password = bcryptjs.hashSync(password, 10);
-                    dbConnection.query('INSERT INTO users SET ?', { email: email, password: password, name }, (err, result) => {
+                    const hashedPassword = bcryptjs.hashSync(password, 10);
+                    dbConnection.query('INSERT INTO users SET ?', { email: email, password: hashedPassword, name }, (err, result) => {
                         if (err) {
                             throw new Error(err);
                         } else {
@@ -200,7 +200,7 @@ export const signin = (req, res) => {
                     });
                 }
 
-                if (!result[1] || !await bcryptjs.compareSync(password, result[1].password)) {
+                if (result.length === 0 || !bcryptjs.compareSync(password, result[2].password)) {
                     res.status(402).json({
                         message: "Incorrect email or password"
                     })

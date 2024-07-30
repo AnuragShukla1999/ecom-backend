@@ -44,8 +44,21 @@ app.listen(process.env.PORT, () => {
 
 
 
-dbConnection.connect(() => {
-    console.log("Database is connected")
+dbConnection.connect((err) => {
+    if (err) {
+        console.error('Error connecting to MySQL database:', err);
+        return; // Exit early to avoid further issues
+    }
+    console.log('Connected to MySQL database');
+
+    // Create database if it does not exist
+    dbConnection.query("CREATE DATABASE IF NOT EXISTS ecom", (err, result) => {
+        if (err) {
+            console.error('Error creating database:', err);
+            return; // Exit early to avoid further issues 
+        }
+        console.log("Database created or already exists");
+    });
 })
 
 
