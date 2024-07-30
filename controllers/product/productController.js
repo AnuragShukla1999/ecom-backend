@@ -82,22 +82,6 @@ export const getAllProduct = async (req, res) => {
 
 
 
-// export const getProductById = async (req, res) => {
-//     const { id } = req.params;
-
-//     try {
-//         const [row] = await dbConnection.promise().query();
-
-
-//     } catch (error) {
-
-//     }
-// };
-
-
-
-
-// Controller function to get a product by ID
 export const getProductById = async (req, res) => {
     const { id } = req.params;
 
@@ -185,7 +169,7 @@ export const updateProduct = async (req, res) => {
           values
         );
     
-        if (result.length === 0) {
+        if (result.affectedRows === 0) {
           return res.status(404).json({ message: 'Product not found' });
         }
     
