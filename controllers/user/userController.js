@@ -72,48 +72,76 @@ import { dbConnection } from "../../db/dbConnection.js";
 
 
 
+// export const signup = async (req, res) => {
+//     const { name, email, password } = req.body;
+
+//     try {
+//         if (!email || !password) {
+//             return res.status(401).json({
+//                 message: "Please enter your email and password"
+//             });
+//         } else {
+//             const sql = 'SELECT email FROM users WHERE email = ?'
+//             dbConnection.query(sql, [email], async (err, result) => {
+//                 if (err) {
+//                     return res.status(401).json({
+//                         message: err
+//                     });
+//                 };
+
+//                 if (result.length > 0) {
+//                     return res.json({
+//                         message: "Email has already been registered"
+//                     })
+//                 } else {
+//                     const hashedPassword = bcryptjs.hashSync(password, 10);
+//                     dbConnection.query('INSERT INTO users SET ?', { email: email, password: hashedPassword, name }, (err, result) => {
+//                         if (err) {
+//                             throw new Error(err);
+//                         } else {
+//                             return res.status(201).json({
+//                                 message: "User created successfully"
+//                             })
+//                         }
+//                     })
+//                 }
+//             })
+//         }
+//     } catch (error) {
+//         return res.status(500).json({
+//             message: error.message
+//         })
+//     }
+// }
+
+
+
+
 export const signup = async (req, res) => {
     const { name, email, password } = req.body;
 
-    try {
-        if (!email || !password) {
-            return res.status(401).json({
-                message: "Please enter your email and password"
-            });
-        } else {
-            const sql = 'SELECT email FROM users WHERE email = ?'
-            dbConnection.query(sql, [email], async (err, result) => {
-                if (err) {
-                    return res.status(401).json({
-                        message: err
-                    });
-                };
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: 'name, email and password are required' });
+    }
 
-                if (result.length > 0) {
-                    return res.json({
-                        message: "Email has already been registered"
-                    })
-                } else {
-                    const hashedPassword = bcryptjs.hashSync(password, 10);
-                    dbConnection.query('INSERT INTO users SET ?', { email: email, password: hashedPassword, name }, (err, result) => {
-                        if (err) {
-                            throw new Error(err);
-                        } else {
-                            return res.status(201).json({
-                                message: "User created successfully"
-                            })
-                        }
-                    })
-                }
-            })
-        }
+    try {
+        const hashedPassword = await bcryptjs.hashSync(password, 10);
+
+        const [result] = await dbConnection.promise().query(
+            'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+            [name, email, hashedPassword]
+        );
+
+        res.status(201).json({ id: result.insertId, message: 'User registered successfully' });
     } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(400).json({ message: 'Username already exists' });
+        } else {
+            console.error(error);
+            res.status(500).json({ message: 'Error registering user' });
+        }
     }
 }
-
 
 
 
@@ -183,42 +211,48 @@ export const signup = async (req, res) => {
 // }
 
 
-export const signin = (req, res) => {
-    const { email, password } = req.body;
+// export const signin = (req, res) => {
+//     const { email, password } = req.body;
 
-    try {
-        if (!email || !password) {
-            res.status(401).json({
-                message: "Please provide email and password"
-            })
-        } else {
-            const sql = 'SELECT email FROM users WHERE email = ?';
-            dbConnection.query(sql, [email], async (err, result) => {
-                if (err) {
-                    return res.status(401).json({
-                        message: err
-                    });
-                }
+//     try {
+//         if (!email || !password) {
+//             res.status(401).json({
+//                 message: "Please provide email and password"
+//             })
+//         } else {
+//             const sql = 'SELECT email FROM users WHERE email = ?';
+//             dbConnection.query(sql, [email], async (err, result) => {
+//                 if (err) {
+//                     return res.status(401).json({
+//                         message: err
+//                     });
+//                 }
 
-                if (result.length === 0 || !bcryptjs.compareSync(password, result[2].password)) {
-                    res.status(402).json({
-                        message: "Incorrect email or password"
-                    })
-                } else {
-                    const token = jwt.sign({ id: result[1].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+//                 if (result.length === 0 || !bcryptjs.compareSync(password, result[2].password)) {
+//                     res.status(402).json({
+//                         message: "Incorrect email or password"
+//                     })
+//                 } else {
+//                     const token = jwt.sign({ id: result[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-                    res.status(201).cookie('access_token', token).json({
-                        message: "Sign in successfully"
-                    })
-                }
-            })
-        }
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
-    }
-}
+//                     res.status(201).cookie('access_token', token).json({
+//                         message: "Sign in successfully"
+//                     })
+//                 }
+//             })
+//         }
+//     } catch (error) {
+//         res.status(500).json({
+//             message: error.message
+//         })
+//     }
+// }
+
+
+
+
+
+
 
 
 
