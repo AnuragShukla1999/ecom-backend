@@ -5,38 +5,6 @@ import { dbConnection } from "../../db/dbConnection.js";
 
 
 
-// this is for mongoose 
-// export const signup = async (req, res) => {
-//     try {
-//         const { email, password, name } = req.body;
-
-//         const user = await userModal.findOne({ email });
-//         console.log("User", user);
-//         if (user) {
-//             throw new Error("User already exist")
-//         };
-//         if (!email || !password) {
-//             res.status(401).json({
-//                 message: "Please Provide email or password"
-//             }) 
-//         };
-//         const hashedPassword = bcryptjs.hashSync(password, 10);
-//         const newUser = new userModal({ name, email, password: hashedPassword })
-//         try {
-//             await newUser.save();
-//             res.status(201).json({
-//                 message: "User created successfully"
-//             })
-//         } catch (error) {
-//             console.log("Error", error)
-//         }
-//     } catch (error) {
-//         console.error("Error", error);
-//     }
-// }
-
-
-
 
 
 /// this is for mysql database
@@ -272,7 +240,7 @@ export const signin = async (req, res) => {
         const user = rows[0];
 
         const isMatch = await bcryptjs.compareSync(password, user.password);
-
+ 
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid username or password' });
         };
