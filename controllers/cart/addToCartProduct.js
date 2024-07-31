@@ -1,4 +1,4 @@
-import { dbConnection } from "../../db/dbConnection";
+import { dbConnection } from "../../db/dbConnection.js";
 
 
 export const addToCartProduct = async (req, res) => {

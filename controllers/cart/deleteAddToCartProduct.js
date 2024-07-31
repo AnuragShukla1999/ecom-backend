@@ -1,3 +1,4 @@
+import { dbConnection } from "../../db/dbConnection.js";
 
 
 
@@ -9,7 +10,7 @@ export const deleteAddToCartProduct = async (req, res) => {
     }
 
     try {
-        const [result] = await promisePool.query(
+        const [result] = await dbConnection.promise().query(
             'DELETE FROM cart WHERE userId = ? AND productId = ?',
             [userId, productId]
         );
