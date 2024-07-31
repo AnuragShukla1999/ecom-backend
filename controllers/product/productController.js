@@ -131,7 +131,7 @@ export const uploadProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     const { id } = req.params;
-    const { name, price, description  } = req.body;
+    const { name, price, description } = req.body;
 
     if (!id) {
         return res.status(400).json({
@@ -142,40 +142,21 @@ export const updateProduct = async (req, res) => {
 
     if (!name && !price && !description) {
         return res.status(400).json({ message: 'At least one field is required to update' });
-      };
-
-
-    const updatedProduct = [];
-    const values = [];
-
-    if (name) {
-        updatedProduct.push('name = ?')
-    }
-
-    if (price) {
-        updatedProduct.push('price = ?')
-    }
-
-    if (description) {
-        updatedProduct.push('description = ?')
     };
-
-    values.push(id);
-
-
+    
     try {
         const [result] = await dbConnection.promise().query(
-          `UPDATE products SET ${updatedProduct.join(', ')} WHERE id = ?`,
-          values
+            'UPDATE products SET name = COALESCE(?, name), description = COALESCE(?, description), price = COALESCE(?, price) WHERE id = ?',
+            [name, description, price, id]
         );
-    
+
         if (result.affectedRows === 0) {
-          return res.status(404).json({ message: 'Product not found' });
+            return res.status(404).json({ message: 'Product not found' });
         }
-    
-        res.status(200).json({ id, name, price, description });
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
-      }
+
+        res.status(200).json({ message: 'Product updated successfully', data: updateProduct });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating product' });
+    }
 }
