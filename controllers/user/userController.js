@@ -252,7 +252,39 @@ export const signup = async (req, res) => {
 
 
 
+export const signin = async (req, res) => {
+    const { email, password } = req.body;
 
+    if (!email || !password) {
+        return res.status(400).json({ message: 'email and password are required' });
+    }
+
+    try {
+        const [rows] = await dbConnection.promise().query(
+            'SELECT id, password FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (rows.length === 0) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        };
+
+        const user = rows[0];
+
+        const isMatch = await bcryptjs.compareSync(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        };
+
+        const token = jwt.sign({ id: user.id, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(201).json({ token, user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error logging in' });
+    }
+}
 
 
 
