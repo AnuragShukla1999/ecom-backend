@@ -239,7 +239,7 @@ export const signin = async (req, res) => {
 
         const user = rows[0];
 
-        const isMatch = await bcryptjs.compareSync(password, user.password);
+        const isMatch = bcryptjs.compareSync(password, user.password);
 
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid username or password' });
