@@ -250,11 +250,7 @@ export const signin = async (req, res) => {
         res.status(201).json({
             message: "Signed in Successfully",
             token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email
-            }
+            rows
         });
     } catch (error) {
         console.error(error);
