@@ -240,14 +240,22 @@ export const signin = async (req, res) => {
         const user = rows[0];
 
         const isMatch = await bcryptjs.compareSync(password, user.password);
- 
+
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid username or password' });
         };
 
         const token = jwt.sign({ id: user.id, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.status(201).json({ message: "Signed in Successfully" ,token, user });
+        res.status(201).json({
+            message: "Signed in Successfully",
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error logging in' });
