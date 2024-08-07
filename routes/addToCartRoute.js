@@ -7,9 +7,9 @@ import { updateAddToCartProduct } from '../controllers/cart/updateAddToCartProdu
 const router = express.Router();
 
 router.post('/addtocart', addToCartProduct);
-router.get('/deleteaddtocart', deleteAddToCartProduct);
-router.get('/updateaddtocart', updateAddToCartProduct);
-router.post('/addtocartview', addToCart);
+router.delete('/deleteaddtocart', deleteAddToCartProduct);
+router.put('/updateaddtocart', updateAddToCartProduct);
+// router.post('/addtocartview', addToCart);
 
 
 export default router;

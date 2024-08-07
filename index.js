@@ -8,7 +8,7 @@ import { dbConnection } from "./db/dbConnection.js";
 
 import userRoute from './routes/userRoutes.js';
 import productRoute from './routes/productRoutes.js'
-
+import cartRoute from './routes/addToCartRoute.js'
 
 dotenv.config();
 
@@ -39,6 +39,7 @@ app.get('/home', (req, res) => {
 
 app.use('/api', userRoute);
 app.use('/api', productRoute);
+app.use('/api', cartRoute);
 
 
 app.listen(process.env.PORT, () => {
